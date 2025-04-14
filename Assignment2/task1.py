@@ -16,42 +16,34 @@ def generate_sales_report(price: dict, sales: list) -> dict:
 
     for item in invalid_sales:
         if item[0] not in res_dict.keys():
-            res_dict.update({item[0]: [0, 1, 0.0, 1]})
+            res_dict[item[0]] = [0, 1, 0.0, 1]
         else:
-            res_dict.update(
-                {
-                    item[0]: [
-                        0,
-                        res_dict[item[0]][1] + 1,
-                        0.0,
-                        res_dict[item[0]][3] + 1,
-                    ]
-                }
-            )
+            res_dict[item[0]] = [
+                0,
+                res_dict[item[0]][1] + 1,
+                0.0,
+                res_dict[item[0]][3] + 1,
+            ]
 
     for item in sales:
         if item not in invalid_sales:
             if item[0] not in res_dict.keys():
-                res_dict.update({item[0]: [item[1], 1, item[2], 0]})
+                res_dict[item[0]] = [item[1], 1, item[2], 0]
             else:
-                res_dict.update(
-                    {
-                        item[0]: [
-                            res_dict[item[0]][0] + item[1],
-                            res_dict[item[0]][1] + 1,
-                            (
-                                res_dict[item[0]][2] * res_dict[item[0]][1]
-                                + item[2]
-                            )
-                            / (res_dict[item[0]][1] - res_dict[item[0]][3] + 1),
-                            res_dict[item[0]][3],
-                        ]
-                    }
-                )
+                res_dict[item[0]] = [
+                    res_dict[item[0]][0] + item[1],
+                    res_dict[item[0]][1] + 1,
+                    (
+                        res_dict[item[0]][2] * res_dict[item[0]][1]
+                        + item[2]
+                    )
+                    / (res_dict[item[0]][1] - res_dict[item[0]][3] + 1),
+                    res_dict[item[0]][3],
+                ]
 
     for item in price.keys():
         if item not in res_dict.keys():
-            res_dict.update({item: [0, 0, 0.0, 0]})
+            res_dict[item] = [0, 0, 0.0, 0]
 
     return {k: tuple(v) for k, v in res_dict.items()}
 
