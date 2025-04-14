@@ -42,7 +42,6 @@ def generate_sales_report(price: dict, sales: list) -> dict:
                             (
                                 res_dict[item[0]][2] * res_dict[item[0]][1]
                                 + item[2]
-                                - res_dict[item[0]][3]
                             )
                             / (res_dict[item[0]][1] - res_dict[item[0]][3] + 1),
                             res_dict[item[0]][3],
@@ -60,12 +59,23 @@ def generate_sales_report(price: dict, sales: list) -> dict:
 # WARNING!!! *DO NOT* REMOVE THIS LINE
 # THIS ENSURES THAT THE CODE BELLOW ONLY RUNS WHEN YOU HIT THE GREEN `Run` BUTTON, AND NOT THE BLUE `Test` BUTTON
 if __name__ == "__main__":
-    price = {"apple": 2.0, "orange": 3.0, "tangerine": 4.0}
+    price = {
+        "tangerine": 9.59,
+        "apple": 6.42,
+        "orange": 9.69,
+        "television": 0.66,
+        "laptop": 5.13,
+        "car": 4.36,
+    }
     sales = [
-        ["apple", 1, 2.0],
-        ["apple", 3, 6.0],
-        ["orange", 1, 2.0],
-        ["carrot", 1, 8.0],
+        ["apple", 8, 51.36],
+        ["apple", 8, 51.36],
+        ["orange", 2, 19.38],
+        ["orange", 3, 2.61],
+        ["apple", 6, 38.519999999999996],
+        ["televsion", 10, 64.2],
+        ["lapto", 2, 10.26],
+        ["laptop", 3, 17.59],
     ]
 
     print("SALES REPORT")
