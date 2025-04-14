@@ -45,6 +45,7 @@ def generate_sales_report_t1(price: dict, sales: list) -> dict:
     return {k: tuple(v) for k, v in res_dict.items()}
 
 
+# need a full set of updated price like {"apple": 2.0, "orange": 3.0, "tangerine": 4.0}
 def patch_item_price(price: dict, patch: dict) -> dict:
     res_dict = price.copy()
     res_dict.update(patch)
@@ -52,6 +53,7 @@ def patch_item_price(price: dict, patch: dict) -> dict:
 
 
 def generate_sales_reports(price: dict, patch: dict, sales: list) -> list:
+    # TODO:: find out how the dict(dict) of patch was nested together
     patch_price_dict = {k: patch_item_price(price, patch[k]) for k, v in patch.items()}
 
     sales_dict = dict()
@@ -63,17 +65,21 @@ def generate_sales_reports(price: dict, patch: dict, sales: list) -> list:
 
     res_list = []
     for k, v in sales_dict.items():
-        res_list += tuple([
-            k,
-            generate_sales_report_t1(
-                {} if k not in patch_price_dict else patch_price_dict[k], sales_dict[k]
-            ),
-            flag_invalid_sales(
-                {} if k not in patch_price_dict else patch_price_dict[k], sales_dict[k]
-            ),
-        ])
+        res_list += [
+            (
+                k,
+                generate_sales_report_t1(
+                    price if k not in patch_price_dict.keys() else patch_price_dict[k],
+                    sales_dict[k],
+                ),
+                flag_invalid_sales(
+                    price if k not in patch_price_dict.keys() else patch_price_dict[k],
+                    sales_dict[k],
+                ),
+            )
+        ]
 
-    return [res_list]
+    return res_list
 
 
 # WARNING!!! *DO NOT* REMOVE THIS LINE
@@ -93,8 +99,5 @@ if __name__ == "__main__":
     ]
 
     print("SALES REPORTS")
-    for report in generate_sales_reports(price,patch,sales):
+    for report in generate_sales_reports(price, patch, sales):
         print(report)
-
-    # print(patch_item_price(price, patch["dep2"]))
-    # print(generate_sales_reports(price, patch, sales))
