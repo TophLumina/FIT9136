@@ -20,7 +20,12 @@ def vacuum_action(vacuum: list, action: str) -> None:
     MOVEMENTS = [[-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]]
 
     def in_area(x: int, y: int) -> bool:
-        return y < len(cleaning_space) and y >= 0 and x < len(cleaning_space[y]) and x >= 0
+        return (
+            y < len(cleaning_space) and y >= 0 and x < len(cleaning_space[y]) and x >= 0
+        )
+
+    def _next_pos(x: int, y: int, dir: list) -> list:
+        return [y + dir[0], x + dir[1]]
 
     def turn_left() -> None:
         vacuum[2] = DIRECTIONS[(DIRECTIONS.index(vacuum[2]) - 1) % len(DIRECTIONS)]
@@ -32,18 +37,18 @@ def vacuum_action(vacuum: list, action: str) -> None:
         cleaning_space[vacuum[0]][vacuum[1]] = True
 
     def forward() -> None:
-        next_pos = [
-            vacuum[0] + MOVEMENTS[DIRECTIONS.index(vacuum[2])][0],
-            vacuum[1] + MOVEMENTS[DIRECTIONS.index(vacuum[2])][1],
-        ]
+        next_pos = _next_pos(
+            vacuum[1], vacuum[0], MOVEMENTS[DIRECTIONS.index(vacuum[2])]
+        )
 
         # out of bound
-        if not in_area(vacuum[1], vacuum[0]):
+        if not in_area(next_pos[1], next_pos[0]):
             turn_right()
             return
 
         if not cleaning_space[vacuum[0]][vacuum[1]]:
             cleaning_space[next_pos[0]][next_pos[1]] = False
+            
         vacuum[0], vacuum[1] = next_pos
 
     COMMANDS = {

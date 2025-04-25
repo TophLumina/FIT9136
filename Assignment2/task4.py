@@ -15,58 +15,74 @@ cleaning_space = [
 ]
 
 obstruction_space = [
-    [None, None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, "c", None, None, None, None, None],
-    [None, None, "r", None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, "w", None, None, None],
-    [None, None, None, None, None, None, None, None, None, None],
-    [None, "w", None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None, None, None],
+    [None, None, None, "w", "w"],
+    [None, None, None, None, None],
+    [None, "w", "r", None, None],
+    ["w", None, "w", None, "w"],
+    [None, None, None, None, None],
+    [None, None, None, None, None],
 ]
 
 
-def vacuum_action(vacuum: list, action: str) -> None:
+def vacuum_action(vacuum: list, action: str) -> str:
     DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
     MOVEMENTS = [[-1, 0], [-1, 1], [0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1]]
 
-    def turn_left() -> None:
+    def in_area(x: int, y: int) -> bool:
+        return (
+            y < len(cleaning_space) and y >= 0 and x < len(cleaning_space[y]) and x >= 0
+        )
+
+    def _next_pos(x: int, y: int, dir: list) -> list:
+        return [y + dir[0], x + dir[1]]
+
+    def turn_left() -> str:
         vacuum[2] = DIRECTIONS[(DIRECTIONS.index(vacuum[2]) - 1) % len(DIRECTIONS)]
+        return "turn-left"
 
-    def turn_right() -> None:
+    def turn_right() -> str:
         vacuum[2] = DIRECTIONS[(DIRECTIONS.index(vacuum[2]) + 1) % len(DIRECTIONS)]
+        return "turn-right"
 
-    def clean() -> None:
+    def clean() -> str:
         cleaning_space[vacuum[0]][vacuum[1]] = True
+        return "clean"
 
-    def forward() -> None:
-        next_pos = [
-            vacuum[0] + MOVEMENTS[DIRECTIONS.index(vacuum[2])][0],
-            vacuum[1] + MOVEMENTS[DIRECTIONS.index(vacuum[2])][1],
-        ]
+    def forward() -> str:
+        next_pos = _next_pos(
+            vacuum[1], vacuum[0], MOVEMENTS[DIRECTIONS.index(vacuum[2])]
+        )
 
         # out of bound
-        if not (
-            next_pos[0] >= 0
-            and next_pos[0] < len(cleaning_space)
-            and next_pos[1] >= 0
-            and next_pos[1] < len(cleaning_space[next_pos[0]])
-        ):
-            turn_right()
-            return
+        if not in_area(next_pos[1], next_pos[0]):
+            return turn_right()
 
         # cat encountered
         if obstruction_space[next_pos[0]][next_pos[1]] == "c":
-            if not obstruction_space[
-                next_pos[0] + MOVEMENTS[DIRECTIONS.index(vacuum[2])][0]
-            ][next_pos[1] + MOVEMENTS[DIRECTIONS.index(vacuum[2])][1]]:
-                pass
+            next_pos_cat = _next_pos(
+                next_pos[1], next_pos[0], MOVEMENTS[DIRECTIONS.index(vacuum[2])]
+            )
+            # any obstruction in the cat's next_pos and is the cat still in the obstruction space?
+            if not obstruction_space[next_pos_cat[0]][next_pos_cat[1]] and in_area(next_pos_cat[1], next_pos_cat[0]):
+                obstruction_space[next_pos_cat[0]][next_pos_cat[1]] = "c"
+                obstruction_space[next_pos[0]][next_pos[1]] = None
+
+            return turn_right()
+
+        # wall encountered
+        if obstruction_space[next_pos[0]][next_pos[1]] == "w":
+            return turn_right()
 
         if not cleaning_space[vacuum[0]][vacuum[1]]:
             cleaning_space[next_pos[0]][next_pos[1]] = False
+
+        # obstruction status update
+        obstruction_space[vacuum[0]][vacuum[1]] = None
+        obstruction_space[next_pos[0]][next_pos[1]] = "r"
+
         vacuum[0], vacuum[1] = next_pos
+
+        return "forward"
 
     COMMANDS = {
         "turn-left": turn_left,
@@ -75,13 +91,15 @@ def vacuum_action(vacuum: list, action: str) -> None:
         "forward": forward,
     }
 
-    COMMANDS[action]()
+    return COMMANDS[action]()
 
 
-def perform_cleaning(instructions: str, vacuum: list) -> None:
-    with open(instructions, "r") as file:
-        for line in file:
-            vacuum_action(vacuum, line.strip())
+def perform_cleaning(instructions: str, vacuum: list, log: str) -> None:
+    with open(instructions, "r") as in_file:
+        with open(log, "w") as out_file:
+            for line in in_file:
+                action = vacuum_action(vacuum, line.strip())
+                out_file.write(action + '\n')
 
 
 # WARNING!!! *DO NOT* REMOVE THIS LINE
