@@ -181,8 +181,8 @@ def vacuum_action(vacuum: list, action: str) -> str:
 def perform_cleaning(instructions: str, vacuums: list, logs: list) -> None:
     # they must have a bug here
     # need to clear the log files first
-    for i in range(len(logs)):
-        with open(logs[i], "w") as out_file:
+    for f in logs:
+        with open(f, "w") as _:
             pass
 
     with open(instructions, "r") as in_file:
