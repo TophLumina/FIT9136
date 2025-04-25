@@ -1,3 +1,0 @@
-0 turn-left,forward,turn-right,turn-left,turn-left,turn-left,turn-right,turn-right,turn-left,turn-left
-0 turn-left,clean,turn-right,turn-right
-0 turn-right,turn-left,turn-left,turn-left,turn-right
