@@ -15,12 +15,16 @@ cleaning_space = [
 ]
 
 obstruction_space = [
-    [None, None, None, "w", "w"],
-    [None, None, None, None, None],
-    [None, "w", "r", None, None],
-    ["w", None, "w", None, "w"],
-    [None, None, None, None, None],
-    [None, None, None, None, None],
+    [None, None, None, None, None, None, None, None, None, None],
+    [None, None, None, None, "c", None, None, None, None, None],
+    [None, None, "r", None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, "w", None, None, None],
+    [None, None, None, None, None, None, None, None, None, None],
+    [None, "w", None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None, None, None],
 ]
 
 
@@ -63,7 +67,9 @@ def vacuum_action(vacuum: list, action: str) -> str:
                 next_pos[1], next_pos[0], MOVEMENTS[DIRECTIONS.index(vacuum[2])]
             )
             # any obstruction in the cat's next_pos and is the cat still in the obstruction space?
-            if not obstruction_space[next_pos_cat[0]][next_pos_cat[1]] and in_area(next_pos_cat[1], next_pos_cat[0]):
+            if not obstruction_space[next_pos_cat[0]][next_pos_cat[1]] and in_area(
+                next_pos_cat[1], next_pos_cat[0]
+            ):
                 obstruction_space[next_pos_cat[0]][next_pos_cat[1]] = "c"
                 obstruction_space[next_pos[0]][next_pos[1]] = None
 
@@ -99,7 +105,7 @@ def perform_cleaning(instructions: str, vacuum: list, log: str) -> None:
         with open(log, "w") as out_file:
             for line in in_file:
                 action = vacuum_action(vacuum, line.strip())
-                out_file.write(action + '\n')
+                out_file.write(action + "\n")
 
 
 # WARNING!!! *DO NOT* REMOVE THIS LINE
