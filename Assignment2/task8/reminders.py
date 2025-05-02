@@ -3,8 +3,15 @@ import datetime as dt
 
 
 class application:
-    def __init__(self, reminders_file: str):
-        data.load_database(reminders_file)
+    def __init__(
+        self,
+        reminders_file: str,
+        reminders_active_file: str,
+        reminders_dismissed_file: str,
+    ):
+        data.load_database(
+            reminders_file, reminders_active_file, reminders_dismissed_file
+        )
 
     def run(self) -> None:
         print("ACTIVE REMINDERS")
@@ -42,6 +49,18 @@ class application:
                     ),
                 )
 
+            if (
+                command.strip().split()[0] == "renew"
+                and command.strip().split()[2] == "at"
+            ):
+                self.renew_at(
+                    int(command.strip().split()[1]),
+                    dt.datetime.strptime(
+                        " ".join(command.strip().split()[-2:]), "%Y-%m-%d %H:%M:%S"
+                    ),
+                )
+                pass
+
         print("goodbye")
 
     def show_active_reminders(self) -> None:
@@ -74,12 +93,31 @@ class application:
         data.set_reminder(msg, dt)
         self.show_active_reminders()
 
+    def renew_at(self, menu_id: int, dt: dt.datetime):
+        a_f = data.get_active_reminders() + data.get_future_reminders()
+        passes = data.get_past_reminders()
+        if menu_id == 0 or menu_id > len(a_f) or menu_id < -len(passes):
+            print(f"{menu_id} is not a valid item from the menu.")
+            return
+        data.renew_reminder(
+            a_f[menu_id - 1].id if menu_id > 0 else passes[-menu_id - 1].id, dt
+        )
+        self.show_active_reminders()
+
 
 # WARNING!!! *DO NOT* REMOVE THIS LINE
 # THIS ENSURES THAT THE CODE BELLOW ONLY RUNS WHEN YOU HIT THE GREEN `Run` BUTTON, AND NOT THE BLUE `Test` BUTTON
 if "__main__" == __name__:
-    app = application("./Assignment2/task7/test_data.csv")
-    # app = application("./test_data.csv")
+    app = application(
+        "./Assignment2/task8/test_data.csv",
+        "./Assignment2/task8/test_active.csv",
+        "./Assignment2/task8/test_dismissed.csv",
+    )
+    # app = application(
+    #     "./test_data.csv",
+    #     "./test_active.csv",
+    #     "./test_dismissed.csv",
+    # )
     # for v in data.reminders_database:
     #     print(str(v))
     app.run()
