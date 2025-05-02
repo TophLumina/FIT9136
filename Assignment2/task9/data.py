@@ -27,6 +27,9 @@ class reminder:
     def is_future(self) -> bool:
         return self.active > now
 
+    def to_list(self) -> list:
+        return [self.id, self.text, self.active, self.dismissed]
+
     def __str__(self) -> str:
         return (
             str(self.id)
@@ -45,13 +48,11 @@ def load_database(reminders_file, active_file, dismissed_file) -> None:
         reader = csv.reader(rf, delimiter=",")
         for row in reader:
             if row[0].isdigit():
-                reminders_database.append(
-                    (int(row[0]), row[1])
-                )
+                reminders_database.append((int(row[0]), row[1]))
 
     reminders_active_database.clear()
     with open(active_file, "r") as af:
-        reader = csv.reader(af, delimiter=',')
+        reader = csv.reader(af, delimiter=",")
         for row in reader:
             if row[0].isdigit():
                 reminders_active_database.append(
@@ -64,7 +65,7 @@ def load_database(reminders_file, active_file, dismissed_file) -> None:
 
     reminders_dismissed_database.clear()
     with open(dismissed_file, "r") as df:
-        reader = csv.reader(df, delimiter=',')
+        reader = csv.reader(df, delimiter=",")
         for row in reader:
             if row[0].isdigit():
                 reminders_dismissed_database.append(
@@ -159,12 +160,19 @@ def renew_reminder(reminder_id: int, active_from: dt.datetime):
         (len(reminders_active_database), reminder_id, active_from)
     )
 
+def dump_database(database_file: str):
+    with open(database_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["reminder_id", "reminder_text", "active_from", "dismissed_at"])
+        for row in get_all_reminders():
+            writer.writerow(row.to_list())
+    pass
 
 if __name__ == "__main__":
     load_database(
-        "./Assignment2/task8/test_data.csv",
-        "./Assignment2/task8/test_active.csv",
-        "./Assignment2/task8/test_dismissed.csv",
+        "./Assignment2/task9/test_data.csv",
+        "./Assignment2/task9/test_active.csv",
+        "./Assignment2/task9/test_dismissed.csv",
     )
     for v in reminders_database:
         print(str(v))
@@ -191,3 +199,5 @@ if __name__ == "__main__":
     for v in get_future_reminders():
         print(str(v))
     print()
+
+    dump_database("./Assignment2/task9/temp_db.csv")

@@ -41,21 +41,21 @@ class remainder:
 def load_database(reminders_file: str) -> None:
     reminders_database.clear()
     with open(reminders_file, "r") as f:
-        for line in f:
-            remainder_detail = line.strip().split(",")
-            if remainder_detail[0].isdigit():
+        reader = csv.reader(f, delimiter=",")
+        for row in reader:
+            if row[0].isdigit():
                 reminders_database.append(
                     remainder(
-                        int(remainder_detail[0]),
-                        remainder_detail[1][1:-1],
+                        int(row[0]),
+                        row[1],
                         dt.datetime.strptime(
-                            remainder_detail[2][1:-1], "%Y-%m-%d %H:%M:%S"
+                            row[2], "%Y-%m-%d %H:%M:%S"
                         ),
                         (
                             dt.datetime.strptime(
-                                remainder_detail[3][1:-1], "%Y-%m-%d %H:%M:%S"
+                                row[3], "%Y-%m-%d %H:%M:%S"
                             )
-                            if len(remainder_detail) > 3
+                            if len(row) > 3
                             else None
                         ),
                     )
