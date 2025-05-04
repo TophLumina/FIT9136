@@ -78,8 +78,8 @@ class application:
 # WARNING!!! *DO NOT* REMOVE THIS LINE
 # THIS ENSURES THAT THE CODE BELLOW ONLY RUNS WHEN YOU HIT THE GREEN `Run` BUTTON, AND NOT THE BLUE `Test` BUTTON
 if "__main__" == __name__:
-    app = application("./Assignment2/task7/test_data.csv")
-    # app = application("./test_data.csv")
+    # app = application("./Assignment2/task7/test_data.csv")
+    app = application("./test_data.csv")
     # for v in data.reminders_database:
     #     print(str(v))
     app.run()

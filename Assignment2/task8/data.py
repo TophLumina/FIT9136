@@ -27,6 +27,25 @@ class reminder:
     def is_future(self) -> bool:
         return self.active > now
 
+    def deepcopy(self):
+        copied_id = self.id
+        copied_text = self.text
+
+        def deepcopy_datetime(obj_dt: dt.datetime) -> dt.datetime:
+            return dt.datetime(
+                obj_dt.year,
+                obj_dt.month,
+                obj_dt.day,
+                obj_dt.hour,
+                obj_dt.minute,
+                obj_dt.second,
+            )
+
+        copied_active = deepcopy_datetime(self.active)
+        copied_dismissed = deepcopy_datetime(self.dismissed)
+
+        return reminder(copied_id, copied_text, copied_active, copied_dismissed)
+
     def __str__(self) -> str:
         return (
             str(self.id)
@@ -45,13 +64,11 @@ def load_database(reminders_file, active_file, dismissed_file) -> None:
         reader = csv.reader(rf, delimiter=",")
         for row in reader:
             if row[0].isdigit():
-                reminders_database.append(
-                    (int(row[0]), row[1])
-                )
+                reminders_database.append((int(row[0]), row[1]))
 
     reminders_active_database.clear()
     with open(active_file, "r") as af:
-        reader = csv.reader(af, delimiter=',')
+        reader = csv.reader(af, delimiter=",")
         for row in reader:
             if row[0].isdigit():
                 reminders_active_database.append(
@@ -64,7 +81,7 @@ def load_database(reminders_file, active_file, dismissed_file) -> None:
 
     reminders_dismissed_database.clear()
     with open(dismissed_file, "r") as df:
-        reader = csv.reader(df, delimiter=',')
+        reader = csv.reader(df, delimiter=",")
         for row in reader:
             if row[0].isdigit():
                 reminders_dismissed_database.append(
@@ -124,7 +141,7 @@ def get_all_reminders() -> list:
                 reminder(item[0], item[1], nearest_future, reminder.unreachable)
             )
 
-    return reminders
+    return [item.deepcopy() for item in reminders]
 
 
 def get_active_reminders() -> list:

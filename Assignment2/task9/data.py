@@ -30,6 +30,25 @@ class reminder:
     def to_list(self) -> list:
         return [self.id, self.text, self.active, self.dismissed]
 
+    def deepcopy(self):
+        copied_id = self.id
+        copied_text = self.text
+
+        def deepcopy_datetime(obj_dt: dt.datetime) -> dt.datetime:
+            return dt.datetime(
+                obj_dt.year,
+                obj_dt.month,
+                obj_dt.day,
+                obj_dt.hour,
+                obj_dt.minute,
+                obj_dt.second,
+            )
+
+        copied_active = deepcopy_datetime(self.active)
+        copied_dismissed = deepcopy_datetime(self.dismissed)
+
+        return reminder(copied_id, copied_text, copied_active, copied_dismissed)
+
     def __str__(self) -> str:
         return (
             str(self.id)
@@ -125,7 +144,7 @@ def get_all_reminders() -> list:
                 reminder(item[0], item[1], nearest_future, reminder.unreachable)
             )
 
-    return reminders
+    return [item.deepcopy() for item in reminders]
 
 
 def get_active_reminders() -> list:
@@ -160,13 +179,15 @@ def renew_reminder(reminder_id: int, active_from: dt.datetime):
         (len(reminders_active_database), reminder_id, active_from)
     )
 
+
 def dump_database(database_file: str):
-    with open(database_file, 'w', newline='') as file:
+    with open(database_file, "w", newline="") as file:
         writer = csv.writer(file)
         writer.writerow(["reminder_id", "reminder_text", "active_from", "dismissed_at"])
         for row in get_all_reminders():
             writer.writerow(row.to_list())
     pass
+
 
 if __name__ == "__main__":
     load_database(

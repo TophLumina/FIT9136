@@ -5,7 +5,7 @@ now = dt.datetime(2025, 4, 7, 10)
 reminders_database = list()
 
 
-class remainder:
+class reminder:
     # it's 1970/1/1 11:00:00
     unreachable = dt.datetime.fromtimestamp(0)
 
@@ -15,7 +15,7 @@ class remainder:
         self.id = _id
         self.text = _text
         self.active = _active
-        self.dismissed = _dismissed if _dismissed else remainder.unreachable
+        self.dismissed = _dismissed if _dismissed else reminder.unreachable
 
     def is_active(self) -> bool:
         return self.active <= now and self.active > self.dismissed
@@ -25,6 +25,25 @@ class remainder:
 
     def is_future(self) -> bool:
         return self.active > now
+
+    def deepcopy(self):
+        copied_id = self.id
+        copied_text = self.text
+
+        def deepcopy_datetime(obj_dt: dt.datetime) -> dt.datetime:
+            return dt.datetime(
+                obj_dt.year,
+                obj_dt.month,
+                obj_dt.day,
+                obj_dt.hour,
+                obj_dt.minute,
+                obj_dt.second,
+            )
+
+        copied_active = deepcopy_datetime(self.active)
+        copied_dismissed = deepcopy_datetime(self.dismissed)
+
+        return reminder(copied_id, copied_text, copied_active, copied_dismissed)
 
     def __str__(self) -> str:
         return (
@@ -45,16 +64,12 @@ def load_database(reminders_file: str) -> None:
         for row in reader:
             if row[0].isdigit():
                 reminders_database.append(
-                    remainder(
+                    reminder(
                         int(row[0]),
                         row[1],
-                        dt.datetime.strptime(
-                            row[2], "%Y-%m-%d %H:%M:%S"
-                        ),
+                        dt.datetime.strptime(row[2], "%Y-%m-%d %H:%M:%S"),
                         (
-                            dt.datetime.strptime(
-                                row[3], "%Y-%m-%d %H:%M:%S"
-                            )
+                            dt.datetime.strptime(row[3], "%Y-%m-%d %H:%M:%S")
                             if len(row) > 3
                             else None
                         ),
@@ -63,21 +78,21 @@ def load_database(reminders_file: str) -> None:
 
 
 def get_active_reminders() -> list:
-    return [item for item in reminders_database if item.is_active()]
+    return [item.deepcopy() for item in reminders_database if item.is_active()]
 
 
 def get_past_reminders() -> list:
-    return [item for item in reminders_database if item.is_passed()]
+    return [item.deepcopy() for item in reminders_database if item.is_passed()]
 
 
 def get_future_reminders() -> list:
-    return [item for item in reminders_database if item.is_future()]
+    return [item.deepcopy() for item in reminders_database if item.is_future()]
 
 
 def set_reminder(reminder_text: str, active_from: dt.datetime) -> None:
     reminders_database.append(
-        remainder(
-            len(reminders_database), reminder_text, active_from, remainder.unreachable
+        reminder(
+            len(reminders_database), reminder_text, active_from, reminder.unreachable
         )
     )
 
