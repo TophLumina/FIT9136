@@ -1,5 +1,3 @@
-from pickle import NONE
-
 
 cleaning_space = [
     [None, None, None],
