@@ -1,3 +1,4 @@
+"checks if the sale is valid"
 def is_valid_sale(
     price: dict, item_type: str, item_quantity: int, sale_total: float
 ) -> bool:
@@ -5,15 +6,17 @@ def is_valid_sale(
         item_type not in price.keys() or item_quantity * price[item_type] != sale_total
     )
 
-
+"finds all invalid sales" 
 def flag_invalid_sales(price, sales) -> list:
     return [item for item in sales if not is_valid_sale(price, *item)]
 
-
+"creating report"
 def generate_sales_report_t1(price: dict, sales: list) -> dict:
     res_dict = dict()
+    "get invalid sales"
     invalid_sales = flag_invalid_sales(price, sales)
 
+    "for processing invalid sales"
     for item in invalid_sales:
         if item[0] not in res_dict.keys():
             res_dict[item[0]] = [0, 1, 0.0, 1]
@@ -25,6 +28,7 @@ def generate_sales_report_t1(price: dict, sales: list) -> dict:
                 res_dict[item[0]][3] + 1,
             ]
 
+    "for processing valid sales"
     for item in sales:
         if item not in invalid_sales:
             if item[0] not in res_dict.keys():
@@ -37,11 +41,11 @@ def generate_sales_report_t1(price: dict, sales: list) -> dict:
                     / (res_dict[item[0]][1] - res_dict[item[0]][3] + 1),
                     res_dict[item[0]][3],
                 ]
-
+    "adds items with no sales at all in the report"
     for item in price.keys():
         if item not in res_dict.keys():
             res_dict[item] = [0, 0, 0.0, 0]
-
+    "list values to tuples"
     return {k: tuple(v) for k, v in res_dict.items()}
 
 
