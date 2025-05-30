@@ -21,7 +21,7 @@ class JourneyItem:
             string += "explore "
             for des in self.log[1]:
                 string += des + " "
-        string = string[:-1]
+        string = string.strip()
         return string
 
 
@@ -29,9 +29,9 @@ class ExplorationSpec:
     Mountain: int = 6
     Lake: int = 8
     Crater: int = 10
-    MountainExplored: bool = False
-    LakeExplored: bool = False
-    CraterExplored: bool = False
+    MountainExplored: int = 0
+    LakeExplored: int = 0
+    CraterExplored: int = 0
 
 
 class Robot:
@@ -85,20 +85,14 @@ class Robot:
         print(f"explore {feature.type} {feature.name}")
         
         if feature.type == "mountain":
-            if self.explore_spec.MountainExplored:
-                self.explore_spec.Mountain *= 1.2
-            days_cost = math.ceil(feature.height / self.explore_spec.Mountain)
-            self.explore_spec.MountainExplored = True
+            days_cost = math.ceil(feature.height / (self.explore_spec.Mountain * pow(1.2, self.explore_spec.MountainExplored)))
+            self.explore_spec.MountainExplored += 1
         elif feature.type == "lake":
-            if self.explore_spec.LakeExplored:
-                self.explore_spec.Lake *= 1.2
-            days_cost = math.ceil(feature.depth / self.explore_spec.Lake)
-            self.explore_spec.LakeExplored = True
+            days_cost = math.ceil(feature.depth / (self.explore_spec.Lake * pow(1.2, self.explore_spec.LakeExplored)))
+            self.explore_spec.LakeExplored += 1
         elif feature.type == "crater":
-            if self.explore_spec.CraterExplored:
-                self.explore_spec.Crater *= 1.2
-            days_cost = math.ceil(feature.perimeter / self.explore_spec.Crater)
-            self.explore_spec.CraterExplored = True
+            days_cost = math.ceil(feature.perimeter / (self.explore_spec.Crater * pow(1.2, self.explore_spec.CraterExplored)))
+            self.explore_spec.CraterExplored += 1
 
         journey_item = JourneyItem((self.days, self.days + days_cost), ("explore", [feature.type, feature.name]))
         self.journey.append(journey_item)
