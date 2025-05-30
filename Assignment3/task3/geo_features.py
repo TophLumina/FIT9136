@@ -1,6 +1,7 @@
 from abc import ABC
 from dataclasses import dataclass
 
+
 @dataclass
 class Location:
     Y: int = 0
@@ -8,9 +9,10 @@ class Location:
 
     def __str__(self):
         return f"({self.Y},{self.X})"
-    
+
     def deep_copy(self):
         return Location(self.Y, self.X)
+
 
 @dataclass
 class Size:
@@ -24,6 +26,7 @@ class GeoFeature(ABC):
         self.size = size
         self.type = type
         self.name = name
+
 
 class Mountain(GeoFeature):
     def __init__(self, location: Location, size: Size, name: str, height: int):
@@ -50,7 +53,8 @@ class Crater(GeoFeature):
 
     def __str__(self):
         return f"{self.type} {self.name}, perimeter {self.perimeter}"
-    
+
+
 class GeoMap:
     def __init__(self, X: int = 0, Y: int = 0):
         self.BoundaryX = X
@@ -59,7 +63,10 @@ class GeoMap:
         self.features_dict = dict()
 
     def add_feature(self, feature: GeoFeature):
-        if 0 <= feature.location.Y < self.BoundaryY and 0 <= feature.location.X < self.BoundaryX:
+        if (
+            0 <= feature.location.Y < self.BoundaryY
+            and 0 <= feature.location.X < self.BoundaryX
+        ):
             self.features_map[feature.location.Y][feature.location.X] = feature
             self.features_dict[feature.name] = feature
 

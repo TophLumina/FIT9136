@@ -32,7 +32,6 @@ if __name__ == "__main__":
                     continue
                 features_map.add_feature(feature)
 
-
     robbie = robot.Robot()
 
     command = ""
@@ -81,7 +80,7 @@ if __name__ == "__main__":
                 token = token.strip()
                 if token in features_map.get_features():
                     dest_list.append(features_map.get_features()[token])
-            
+
             robbie.missions(dest_list, features_map)
 
         elif command == "display journey":

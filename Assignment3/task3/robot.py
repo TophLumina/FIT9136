@@ -161,13 +161,25 @@ class Robot:
         print(f"explore {feature.type} {feature.name}")
 
         if feature.type == "mountain":
-            days_cost = math.ceil(feature.height / (self.explore_spec.Mountain * pow(1.2, self.experience.MountainExplored)))
+            days_cost = math.ceil(
+                feature.height
+                / (
+                    self.explore_spec.Mountain
+                    * pow(1.2, self.experience.MountainExplored)
+                )
+            )
             self.experience.MountainExplored += 1
         elif feature.type == "lake":
-            days_cost = math.ceil(feature.depth / (self.explore_spec.Lake * pow(1.2, self.experience.LakeExplored)))
+            days_cost = math.ceil(
+                feature.depth
+                / (self.explore_spec.Lake * pow(1.2, self.experience.LakeExplored))
+            )
             self.experience.LakeExplored += 1
         elif feature.type == "crater":
-            days_cost = math.ceil(feature.perimeter / (self.explore_spec.Crater * pow(1.2, self.experience.CraterExplored)))
+            days_cost = math.ceil(
+                feature.perimeter
+                / (self.explore_spec.Crater * pow(1.2, self.experience.CraterExplored))
+            )
             self.experience.CraterExplored += 1
 
         journey_item = JourneyItem(

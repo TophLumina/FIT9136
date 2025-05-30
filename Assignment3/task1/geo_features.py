@@ -1,6 +1,7 @@
 from abc import ABC
 from dataclasses import dataclass
 
+
 @dataclass
 class Location:
     Y: int = 0
@@ -8,6 +9,7 @@ class Location:
 
     def __str__(self):
         return f"({self.Y},{self.X})"
+
 
 @dataclass
 class Size:
@@ -21,6 +23,7 @@ class GeoFeature(ABC):
         self.size = size
         self.type = type
         self.name = name
+
 
 class Mountain(GeoFeature):
     def __init__(self, location: Location, size: Size, name: str, height: int):

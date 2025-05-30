@@ -42,11 +42,11 @@ class TestBankAccount(unittest.TestCase):
 
         # Test with float balance
         account2 = BankAccount("Jane Smith", 500.50)
-        self.assertEqual(account2.balance, 550.49)  # 500.50 + 49.99 bonus        # Test with zero balance
-        account3 = BankAccount("Zero Balance", 0)
         self.assertEqual(
-            account3.balance, 49.99
-        )  # 0 + 49.99 bonus
+            account2.balance, 550.49
+        )  # 500.50 + 49.99 bonus        # Test with zero balance
+        account3 = BankAccount("Zero Balance", 0)
+        self.assertEqual(account3.balance, 49.99)  # 0 + 49.99 bonus
 
     def test_invalid_owner_type(self):
         """Test creating account with invalid owner type"""

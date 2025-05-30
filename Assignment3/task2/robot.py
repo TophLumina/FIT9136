@@ -1,6 +1,7 @@
 import geo_features
 import math
 
+
 class JourneyItem:
     def __init__(self, duration: list[int], log: tuple[str, list]):
         self.duration = duration
@@ -41,37 +42,63 @@ class Robot:
         self.journey = []
         self.days = 0
 
-    def step(self, dest: geo_features.Location, journey_item: JourneyItem, boundaryX: int, boundaryY: int) -> None:
+    def step(
+        self,
+        dest: geo_features.Location,
+        journey_item: JourneyItem,
+        boundaryX: int,
+        boundaryY: int,
+    ) -> None:
         if self.location.X != dest.X:
             # need to warp across the boundary
             if abs(dest.X - self.location.X) >= boundaryX / 2:
-                self.location.X = (self.location.X + (1 if dest.X < self.location.X else -1)) % boundaryX
+                self.location.X = (
+                    self.location.X + (1 if dest.X < self.location.X else -1)
+                ) % boundaryX
             else:
-                self.location.X = (self.location.X + (1 if dest.X > self.location.X else -1)) % boundaryX
-            journey_item.duration = [journey_item.duration[0], journey_item.duration[1] + 1]
-            journey_item.log[1].append(geo_features.Location(self.location.Y, self.location.X))
+                self.location.X = (
+                    self.location.X + (1 if dest.X > self.location.X else -1)
+                ) % boundaryX
+            journey_item.duration = [
+                journey_item.duration[0],
+                journey_item.duration[1] + 1,
+            ]
+            journey_item.log[1].append(
+                geo_features.Location(self.location.Y, self.location.X)
+            )
             return
-        
+
         if self.location.Y != dest.Y:
             # need to warp across the boundary
             if abs(dest.Y - self.location.Y) >= boundaryY / 2:
-                self.location.Y = (self.location.Y + (1 if dest.Y < self.location.Y else -1)) % boundaryY
+                self.location.Y = (
+                    self.location.Y + (1 if dest.Y < self.location.Y else -1)
+                ) % boundaryY
             else:
-                self.location.Y = (self.location.Y + (1 if dest.Y > self.location.Y else -1)) % boundaryY
-            journey_item.duration = [journey_item.duration[0], journey_item.duration[1] + 1]
-            journey_item.log[1].append(geo_features.Location(self.location.Y, self.location.X))
+                self.location.Y = (
+                    self.location.Y + (1 if dest.Y > self.location.Y else -1)
+                ) % boundaryY
+            journey_item.duration = [
+                journey_item.duration[0],
+                journey_item.duration[1] + 1,
+            ]
+            journey_item.log[1].append(
+                geo_features.Location(self.location.Y, self.location.X)
+            )
             return
 
     def move(self, dest: geo_features.Location, boundaryX: int, boundaryY: int) -> None:
         if dest.X < 0 or dest.X >= boundaryX or dest.Y < 0 or dest.Y >= boundaryY:
             raise ValueError("Destination out of bounds")
-        
+
         if self.location == dest:
             print("same location")
             return
-        
+
         print(f"move from {self.location} to {dest}")
-        journey_item = JourneyItem((self.days, self.days), ("move", [self.location.deep_copy()]))
+        journey_item = JourneyItem(
+            (self.days, self.days), ("move", [self.location.deep_copy()])
+        )
         while self.location != dest:
             self.step(dest, journey_item, boundaryX, boundaryY)
             self.days += 1
@@ -83,18 +110,36 @@ class Robot:
             print("nothing to explore")
             return
         print(f"explore {feature.type} {feature.name}")
-        
+
         if feature.type == "mountain":
-            days_cost = math.ceil(feature.height / (self.explore_spec.Mountain * pow(1.2, self.explore_spec.MountainExplored)))
+            days_cost = math.ceil(
+                feature.height
+                / (
+                    self.explore_spec.Mountain
+                    * pow(1.2, self.explore_spec.MountainExplored)
+                )
+            )
             self.explore_spec.MountainExplored += 1
         elif feature.type == "lake":
-            days_cost = math.ceil(feature.depth / (self.explore_spec.Lake * pow(1.2, self.explore_spec.LakeExplored)))
+            days_cost = math.ceil(
+                feature.depth
+                / (self.explore_spec.Lake * pow(1.2, self.explore_spec.LakeExplored))
+            )
             self.explore_spec.LakeExplored += 1
         elif feature.type == "crater":
-            days_cost = math.ceil(feature.perimeter / (self.explore_spec.Crater * pow(1.2, self.explore_spec.CraterExplored)))
+            days_cost = math.ceil(
+                feature.perimeter
+                / (
+                    self.explore_spec.Crater
+                    * pow(1.2, self.explore_spec.CraterExplored)
+                )
+            )
             self.explore_spec.CraterExplored += 1
 
-        journey_item = JourneyItem((self.days, self.days + days_cost), ("explore", [feature.type, feature.name]))
+        journey_item = JourneyItem(
+            (self.days, self.days + days_cost),
+            ("explore", [feature.type, feature.name]),
+        )
         self.journey.append(journey_item)
         self.days += days_cost
 
